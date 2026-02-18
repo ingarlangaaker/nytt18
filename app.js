@@ -1,4 +1,4 @@
-// app.js — bootstrap Core v1.2
+// app.js — bootstrap Core v1.3.0
 import { DB } from "./core/db/index.js";
 import { createRouter } from "./core/router.js";
 import { renderTopNav, renderSidebar, setHeader, setActions } from "./core/ui/layout.js";
@@ -12,6 +12,9 @@ import { renderPlanteJournal } from "./modules/plante/journal.js";
 import { renderJobb } from "./modules/jobb/module.js";
 import { renderTrash } from "./modules/trash/module.js";
 import { renderBackup } from "./modules/backup/module.js";
+import { renderOppgaver } from "./modules/oppgaver/module.js";
+import { renderNotater } from "./modules/notater/module.js";
+import { renderRapport } from "./modules/rapport/module.js";
 
 const ui = {
   topnavEl: document.getElementById("topnav"),
@@ -63,6 +66,9 @@ function appShell(currentPath) {
     { label: "Hjem", path: "/", icon:"🏠" },
     { label: "Min gård", path: "/min-gard", icon:"⚙️" },
     { label: "Jobb", path: "/jobb", icon:"⏱️" },
+    { label: "Oppgaver", path: "/oppgaver", icon:"✅" },
+    { label: "Notater", path: "/notater", icon:"📝" },
+    { label: "Rapport", path: "/rapport", icon:"📄" },
     { label: "Papirkurv", path: "/papirkurv", icon:"🗑️" },
     { label: "Backup", path: "/backup", icon:"💾" },
   ];
@@ -76,19 +82,22 @@ function ctx() { return { db, state, ui }; }
 router.on("/", async () => {
   await refreshState();
   appShell("/");
-  setHeader(ui, "Hjem", "Stabil kjerne (Core v1.2)");
+  setHeader(ui, "Hjem", "Stabil kjerne (Core v1.3.0)");
   setActions(ui.actionsEl, [
     { label: "Min gård", primary: true, onClick: () => location.hash = "#/min-gard" },
     { label: "Jobbklokke", onClick: () => location.hash = "#/jobb" },
     { label: "Skifter", onClick: () => location.hash = "#/plante" },
     { label: "Journal", onClick: () => location.hash = "#/plante/journal" },
+    { label: "Oppgaver", onClick: () => location.hash = "#/oppgaver" },
+    { label: "Notater", onClick: () => location.hash = "#/notater" },
+    { label: "Rapport", onClick: () => location.hash = "#/rapport" },
     { label: "yr.no", onClick: () => window.open("https://www.yr.no", "_blank", "noopener,noreferrer") }
   ]);
   ui.viewEl.innerHTML = `
     <div class="grid">
       <div class="card">
         <div class="badge">Status</div>
-        <h2 style="margin:8px 0 0 0">Core v1.2 er oppe</h2>
+        <h2 style="margin:8px 0 0 0">Core v1.3.0 er oppe</h2>
         <div class="muted">DB wrapper • Brukere • Skifter • Sau • Events</div>
       </div>
 
@@ -178,6 +187,36 @@ router.on("/plante/journal", async () => {
   setHeader(ui, "Journal", "Gjødseljournal og sprøytejournal + PDF");
   setActions(ui.actionsEl, []);
   await renderPlanteJournal(ctx());
+});
+
+router.on("/oppgaver", async () => {
+  await refreshState();
+  const mods = (state.dbState?.features?.appModules) || {};
+  if (mods.oppgaver === false) { location.hash = "#/"; return; }
+  appShell("/oppgaver");
+  setHeader(ui, "Oppgaver", "To-do / huskeliste");
+  setActions(ui.actionsEl, []);
+  await renderOppgaver(ctx());
+});
+
+router.on("/notater", async () => {
+  await refreshState();
+  const mods = (state.dbState?.features?.appModules) || {};
+  if (mods.notater === false) { location.hash = "#/"; return; }
+  appShell("/notater");
+  setHeader(ui, "Notater", "Dagbok / logg");
+  setActions(ui.actionsEl, []);
+  await renderNotater(ctx());
+});
+
+router.on("/rapport", async () => {
+  await refreshState();
+  const mods = (state.dbState?.features?.appModules) || {};
+  if (mods.rapport === false) { location.hash = "#/"; return; }
+  appShell("/rapport");
+  setHeader(ui, "Rapport", "Eksport / utskrift");
+  setActions(ui.actionsEl, []);
+  await renderRapport(ctx());
 });
 
 router.on("/sau", async () => {

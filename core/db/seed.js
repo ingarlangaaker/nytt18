@@ -11,7 +11,7 @@ export async function ensureSeed(db) {
     updatedAt: now(),
 
     meta: {
-      appName: "FarmApp Core v1.2",
+      appName: "FarmApp Core v1.3.0",
       farmName: "Min gård",
       geo: {
         countyCode: "",
@@ -22,8 +22,8 @@ export async function ensureSeed(db) {
     },
 
     users: [
-      { id: "u1", name: "storbonden", role: "owner", active: true, createdAt: now() },
-      { id: "u2", name: "avløser1", role: "worker", active: true, createdAt: now() }
+      { id: "u1", name: "Storbonden", role: "owner", active: true, createdAt: now() },
+      { id: "u2", name: "Avløser1", role: "worker", active: true, createdAt: now() }
     ],
     activeUserId: "u1",
 
@@ -39,6 +39,8 @@ export async function ensureSeed(db) {
     fertilizerLog: [],
     plantProtectionLog: [],
     workLogs: [],
+    tasks: [],
+    notes: [],
     events: [],
     trash: { animals: [], events: [], fields: [] }
   };

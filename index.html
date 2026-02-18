@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0b0f14" />
   <title>FarmApp (Core v1.2.1)</title>
   <link rel="stylesheet" href="./core/ui/styles.css" />
+  <link rel="manifest" href="./manifest.webmanifest">
 </head>
 <body>
   <div id="app">
@@ -37,11 +38,16 @@
     </main>
 
     <footer class="footer">
-      <span class="muted">FarmApp Core v1.2.1 — DB + users + skifter + sau + events</span>
+      <span class="muted">FarmApp Core v1.3.0.2 — DB + users + skifter + sau + events</span>
       <span class="muted" id="footerStatus"></span>
     </footer>
   </div>
 
   <script type="module" src="./app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+}
+</script>
 </body>
 </html>
