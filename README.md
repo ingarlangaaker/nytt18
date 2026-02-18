@@ -1,1 +1,0 @@
-# FarmApp Core v1.2\n
