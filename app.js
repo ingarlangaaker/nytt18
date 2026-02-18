@@ -26,6 +26,11 @@ const ui = {
 };
 
 const db = new DB();
+
+// BOOTSTRAP_GUARD
+async function boot(){
+  try {
+
 await db.init();
 
 const state = {
@@ -200,3 +205,15 @@ router.on("/404", async () => {
 });
 
 router.navigate();
+  } catch (err) {
+    console.error(err);
+    const msg = (err && err.message) ? err.message : String(err);
+    ui.topnavEl.innerHTML = '';
+    ui.sidebarEl.innerHTML = '';
+    ui.titleEl.textContent = 'Feil ved oppstart';
+    ui.subEl.textContent = 'Sjekk Console for detaljer';
+    ui.actionsEl.innerHTML = '';
+    ui.viewEl.innerHTML = `<div class="grid"><div class="card"><div class="badge">Crash</div><h2 style="margin:8px 0 0 0">Appen stoppet</h2><div class="muted" style="margin-top:8px">${msg}</div><div class="muted" style="margin-top:10px">Send meg teksten over, så fikser jeg på første forsøk.</div></div></div>`;
+  }
+}
+boot();

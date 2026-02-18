@@ -1,5 +1,11 @@
 // modules/minGard/module.js — settings: active user + geo selection + module toggles
-import geo from "../../data/geo/municipalities.min.json" assert { type: "json" };
+// NOTE: We fetch geo json at runtime for maximum browser compatibility (GitHub Pages + Android)
+async function loadGeo() {
+  const url = new URL("../../data/geo/municipalities.min.json", import.meta.url);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Kunne ikke laste geo-data: " + res.status);
+  return await res.json();
+}
 
 export async function renderMinGard(ctx) {
   const { db, state, ui } = ctx;
@@ -8,10 +14,11 @@ export async function renderMinGard(ctx) {
   const dbState = await db.get("db");
   const user = state.activeUser;
 
-  const counties = geo.counties;
+  const geo = await loadGeo();
+  const counties = geo.counties || [];
 
   const countyOptions = counties.map(c => `<option value="${c.code}" ${dbState.meta.geo.countyCode===c.code?"selected":""}>${c.name}</option>`).join("");
-  const selectedCounty = counties.find(c => c.code === dbState.meta.geo.countyCode) || counties[0];
+  const selectedCounty = counties.find(c => c.code === dbState.meta.geo.countyCode) || counties[0] || { municipalities: [] };
   const munis = selectedCounty?.municipalities || [];
   const muniOptions = munis.map(m => `<option value="${m.code}" ${dbState.meta.geo.municipalityCode===m.code?"selected":""}>${m.name}</option>`).join("");
 
@@ -32,7 +39,7 @@ export async function renderMinGard(ctx) {
               ${dbState.users.map(u => `<option value="${u.id}" ${dbState.activeUserId===u.id?"selected":""}>${u.name} (${u.role})</option>`).join("")}
             </select>
           </div>
-          <div class="muted" style="margin-top:8px">Owner kan endre innstillinger og eksportere tilsynspakke. Avløser kan ikke.</div>
+          <div class="muted" style="margin-top:8px">Owner kan endre innstillinger og eksportere. Avløser kan ikke.</div>
         </div>
 
         <div class="card">
@@ -53,9 +60,7 @@ export async function renderMinGard(ctx) {
               </select>
             </div>
           </div>
-          <div class="muted" style="margin-top:8px">
-            Soner vises ikke her. Soner brukes senere i beregninger basert på kommunenummer.
-          </div>
+          <div class="muted" style="margin-top:8px">Soner brukes senere i beregninger basert på kommunenummer.</div>
         </div>
       </div>
 
